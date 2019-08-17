@@ -1,0 +1,4 @@
+github.com/hypebeast/go-osc v0.0.0-20181130121958-adefe22206c1 h1:csLuD/R1zpC5lpYGOQybOfpxI68kHU+eS13QZ26DZrM=
+github.com/hypebeast/go-osc v0.0.0-20181130121958-adefe22206c1/go.mod h1:VCiuhv+/+jPFqHeZAgVC61Cr4drPso5XEEKmEiqCsuU=
+github.com/jessevdk/go-flags v1.4.0 h1:4IU2WS7AumrZ/40jfhf4QVDMsQwqA7VEHozFRrGARJA=
+github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
