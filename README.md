@@ -25,9 +25,24 @@ Help Options:
   -h, --help    Show this help message
 ```
 
-**Compile**
+### Compile
+
 Run this command to generate the binary:
 
 ```bash
 ➜  sicc git:(master) ✗ go build
+```
+
+### Example Usage
+
+```bash
+# Send mode and color to the device listening on ip 10.10.2.99 on port 8123
+➜  sicc git:(master) ✗ sicc --server 10.10.2.99 --port 8123 --mode 10 --color red
+
+# Send only the color purple to the device
+➜  sicc git:(master) ✗ sicc --server 10.10.2.99 --port 8123 --color "#800080"
+
+# Send only the mode to the device
+➜  sicc git:(master) ✗ sicc --server 10.10.2.99 --port 8123 --mode 3
+
 ```
