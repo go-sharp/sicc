@@ -45,7 +45,7 @@ func main() {
 		}
 	}
 
-	if cfg.Mode >= 0 && cfg.Mode < 16 {
+	if cfg.Mode >= 0 && cfg.Mode < 15 {
 		fmt.Println("sending mode ", cfg.Mode, " to device...")
 		if err := client.sendMode(cfg.Mode); err != nil {
 			handleError("mode", err)

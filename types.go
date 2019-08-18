@@ -12,7 +12,7 @@ type config struct {
 	Server  string `short:"s" long:"server" description:"Name or IP adress to connect to (required)"`
 	Port    int    `short:"p" long:"port" description:"Port on which the server is listening (required)"`
 	Color   string `short:"c" long:"color" description:"Color to use (ex. #a2ff13)"`
-	Mode    int    `short:"m" long:"mode" description:"Mode to use (0-15)" default:"-1"`
+	Mode    int    `short:"m" long:"mode" description:"Mode to use (0-14)" default:"-1"`
 	Version bool   `short:"v" long:"version" description:"Show the current version"`
 }
 
