@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -8,10 +9,11 @@ import (
 )
 
 type config struct {
-	Server string `short:"s" long:"server" description:"Name or IP adress to connect to" required:"true"`
-	Port   int    `short:"p" long:"port" description:"Port on which the server is listening" required:"true"`
-	Color  string `short:"c" long:"color" description:"Color to use (ex. #a2ff13)"`
-	Mode   int
+	Server  string `short:"s" long:"server" description:"Name or IP adress to connect to (required)"`
+	Port    int    `short:"p" long:"port" description:"Port on which the server is listening (required)"`
+	Color   string `short:"c" long:"color" description:"Color to use (ex. #a2ff13)"`
+	Mode    int    `short:"m" long:"mode" description:"Mode to use (0-15)" default:"-1"`
+	Version bool   `short:"v" long:"version" description:"Show the current version"`
 }
 
 type oscAddress string
@@ -52,10 +54,21 @@ func (c client) sendColor(color color) error {
 	return nil
 }
 
+func (c client) sendMode(mode int) error {
+
+	msg := osc.NewMessage(moddAddr.String(), float32(mode))
+
+	if err := c.oscClient.Send(msg); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type color struct {
-	red   uint32
-	green uint32
-	blue  uint32
+	red   float32
+	green float32
+	blue  float32
 }
 
 var predefinedColors = map[string]color{
@@ -66,18 +79,38 @@ var predefinedColors = map[string]color{
 	"green": color{0x00, 0xff, 0x00},
 }
 
-func parseColor(str string) (color, error) {
+func parseColor(str string) (col color, err error) {
 	if strings.HasPrefix(str, "#") {
-		str = str[1:]
+		str = strings.ToLower(str[1:])
+
 		if len(str) == 3 {
-
-		} else {
-
+			var s string
+			for i := 0; i < 3; i++ {
+				s += strings.Repeat(string(str[i]), 2)
+			}
+			str = s
 		}
-	} else {
-		if col, ok := predefinedColors[str]; ok {
+
+		var ok bool
+		if col.red, col.green, col.blue, ok = convertColor(str); ok {
 			return col, nil
 		}
-		return color{}, fmt.Errorf("invalid predefined color value: %v", str)
+		return color{}, fmt.Errorf("invalid color definition: %v", str)
 	}
+
+	if col, ok := predefinedColors[str]; ok {
+		return col, nil
+	}
+	return color{}, fmt.Errorf("invalid predefined color value: %v", str)
+}
+
+func convertColor(str string) (r, g, b float32, ok bool) {
+	if len(str) != 6 {
+		return r, g, b, false
+	}
+
+	if decoded, err := hex.DecodeString(str); err == nil {
+		return float32(decoded[0]), float32(decoded[1]), float32(decoded[2]), true
+	}
+	return r, g, b, false
 }
