@@ -52,6 +52,13 @@ func main() {
 		}
 		fmt.Println("done")
 	}
+
+	if cfg.Delay >= 0 && cfg.Delay <= 1 {
+		if err := client.sendDelay(cfg.Delay); err != nil {
+			handleError("delay", err)
+		}
+		fmt.Println("done")
+	}
 }
 
 func newClient(addr string, port int) client {

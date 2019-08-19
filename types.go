@@ -9,11 +9,12 @@ import (
 )
 
 type config struct {
-	Server  string `short:"s" long:"server" description:"Name or IP adress to connect to (required)"`
-	Port    int    `short:"p" long:"port" description:"Port on which the server is listening (required)"`
-	Color   string `short:"c" long:"color" description:"Color to use (ex. #a2ff13)"`
-	Mode    int    `short:"m" long:"mode" description:"Mode to use (0-14)" default:"-1"`
-	Version bool   `short:"v" long:"version" description:"Show the current version"`
+	Server  string  `short:"s" long:"server" description:"Name or IP adress to connect to (required)"`
+	Port    int     `short:"p" long:"port" description:"Port on which the server is listening (required)"`
+	Color   string  `short:"c" long:"color" description:"Color to use (ex. #a2ff13)"`
+	Mode    int     `short:"m" long:"mode" description:"Mode to use (0-14)" default:"-1" default-mask:"0"`
+	Delay   float32 `short:"d" long:"delay" description:"Delay to use (0-1)" default:"-1" default-mask:"0"`
+	Version bool    `short:"v" long:"version" description:"Show the current version"`
 }
 
 type oscAddress string
@@ -65,6 +66,17 @@ func (c client) sendMode(mode int) error {
 	return nil
 }
 
+func (c client) sendDelay(delay float32) error {
+
+	msg := osc.NewMessage(delayAddr.String(), delay)
+
+	if err := c.oscClient.Send(msg); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type color struct {
 	red   float32
 	green float32
@@ -72,11 +84,12 @@ type color struct {
 }
 
 var predefinedColors = map[string]color{
-	"white": color{0xff, 0xff, 0xff},
-	"black": color{0x00, 0x00, 0x00},
-	"red":   color{0xff, 0x00, 0x00},
-	"blue":  color{0x00, 0x00, 0xff},
-	"green": color{0x00, 0xff, 0x00},
+	"white":  color{clampByteToFloat32(0xff), clampByteToFloat32(0xff), clampByteToFloat32(0xff)},
+	"black":  color{clampByteToFloat32(0x00), clampByteToFloat32(0x00), clampByteToFloat32(0x00)},
+	"red":    color{clampByteToFloat32(0xff), clampByteToFloat32(0x00), clampByteToFloat32(0x00)},
+	"blue":   color{clampByteToFloat32(0x00), clampByteToFloat32(0x00), clampByteToFloat32(0xff)},
+	"green":  color{clampByteToFloat32(0x00), clampByteToFloat32(0xff), clampByteToFloat32(0x00)},
+	"orange": color{clampByteToFloat32(0xff), clampByteToFloat32(0xa5), clampByteToFloat32(0x00)},
 }
 
 func parseColor(str string) (col color, err error) {
@@ -110,7 +123,15 @@ func convertColor(str string) (r, g, b float32, ok bool) {
 	}
 
 	if decoded, err := hex.DecodeString(str); err == nil {
-		return float32(decoded[0]), float32(decoded[1]), float32(decoded[2]), true
+		return clampByteToFloat32(decoded[0]), clampByteToFloat32(decoded[1]), clampByteToFloat32(decoded[2]), true
 	}
 	return r, g, b, false
+}
+
+func clampByteToFloat32(c byte) float32 {
+	n := float32(c)
+	if n == 0 {
+		return n
+	}
+	return float32(float32(c) / 255)
 }
