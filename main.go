@@ -8,7 +8,7 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
-const version = "1.0.0"
+const version = "1.1.0"
 
 var cfg config
 var parser = flags.NewParser(&cfg, flags.HelpFlag|flags.PassDoubleDash)
